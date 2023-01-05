@@ -46,20 +46,48 @@ parameter OPCODE_JAL       = 7'h6f;
 parameter OPCODE_AUIPC     = 7'h17;
 parameter OPCODE_LUI       = 7'h37;
 
+// PPU custom
+parameter OPCODE_PPU_OP    = 7'h0b;
+parameter OPCODE_PPU_OPIMM = 7'h2b;
 // those opcodes are now used for PULP custom instructions
 // parameter OPCODE_CUST0     = 7'h0b
 // parameter OPCODE_CUST1     = 7'h2b
 
 // PULP custom
-parameter OPCODE_LOAD_POST  = 7'h0b;
-parameter OPCODE_STORE_POST = 7'h2b;
-parameter OPCODE_PULP_OP    = 7'h5b;
-parameter OPCODE_VECOP      = 7'h57;
-parameter OPCODE_HWLOOP     = 7'h7b;
+//parameter OPCODE_LOAD_POST  = 7'h0b;
+//parameter OPCODE_STORE_POST = 7'h2b;
+//parameter OPCODE_PULP_OP    = 7'h5b;
+//parameter OPCODE_VECOP      = 7'h57;
+//parameter OPCODE_HWLOOP     = 7'h7b;
 
 parameter REGC_S1   = 2'b10;
 parameter REGC_RD   = 2'b01;
 parameter REGC_ZERO = 2'b11;
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  _____  _____  _    _    ____                       _   _                  //
+// |  __ \|  __ \| |  | |  / __ \                     | | (_)                 //
+// | |__) | |__) | |  | | | |  | |_ __   ___ _ __ __ _| |_ _  ___  _ __  ___  //
+// |  ___/|  ___/| |  | | | |  | | '_ \ / _ \ '__/ _` | __| |/ _ \| '_ \/ __| //
+// | |    | |    | |__| | | |__| | |_) |  __/ | | (_| | |_| | (_) | | | \__ \ //
+// |_|    |_|     \____/   \____/| .__/ \___|_|  \__,_|\__|_|\___/|_| |_|___/ //
+//                               | |                                          //
+//                               |_|                                          //
+////////////////////////////////////////////////////////////////////////////////
+
+// ToDO: we should have these from a ppu_pkg file instead of hardcoding them here
+parameter PPU_OP_WIDTH = 3;
+
+parameter PPU_ADD = 3'd0;
+parameter PPU_SUB = 3'd1;
+parameter PPU_MUL = 3'd2;
+parameter PPU_DIV = 3'd3;
+parameter FLOAT_TO_POSIT = 3'd4;
+
+
 
 
 //////////////////////////////////////////////////////////////////////////////

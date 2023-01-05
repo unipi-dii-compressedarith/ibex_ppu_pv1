@@ -53,7 +53,7 @@ module zeroriscy_decoder
   // ALU signals
   output logic [ALU_OP_WIDTH-1:0] alu_operator_o, // ALU operation selection
   output logic [2:0]  alu_op_a_mux_sel_o,      // operand a selection: reg value, PC, immediate or zero
-  output logic [2:0]  alu_op_b_mux_sel_o,      // oNOperand b selection: reg value or immediate
+  output logic [2:0]  alu_op_b_mux_sel_o,      // operand b selection: reg value or immediate
 
   output logic [0:0]  imm_a_mux_sel_o,         // immediate selection for operand a
   output logic [3:0]  imm_b_mux_sel_o,         // immediate selection for operand b
@@ -63,6 +63,13 @@ module zeroriscy_decoder
   output logic        div_int_en_o,           // perform integer division or reminder
   output logic [1:0]  multdiv_operator_o,
   output logic [1:0]  multdiv_signed_mode_o,
+  
+  // PPU signals
+  output logic        ppu_en_o,               // enable PPU
+  output logic [PPU_OP_WIDTH-1:0] ppu_operator_o,   // PPU operation
+  output logic [2:0]  ppu_op_a_mux_sel_o,     // operand a selection: reg value, PC, immediate or zero
+  output logic [2:0]  ppu_op_b_mux_sel_o,     // operand b selection: reg value or immediate
+  
   // register file related signals
   output logic        regfile_we_o,            // write enable for regfile
 
@@ -91,6 +98,7 @@ module zeroriscy_decoder
 
   logic       mult_int_en;
   logic       div_int_en;
+  logic       ppu_en;
   logic       branch_in_id;
   logic       jump_in_id;
 
@@ -114,11 +122,16 @@ module zeroriscy_decoder
     alu_op_a_mux_sel_o          = OP_A_REGA_OR_FWD;
     alu_op_b_mux_sel_o          = OP_B_REGB_OR_FWD;
 
+    ppu_operator_o              = PPU_ADD;
+    ppu_op_a_mux_sel_o          = OP_A_REGA_OR_FWD;
+    ppu_op_b_mux_sel_o          = OP_B_REGB_OR_FWD;
+
     imm_a_mux_sel_o             = IMMA_ZERO;
     imm_b_mux_sel_o             = IMMB_I;
 
     mult_int_en                 = 1'b0;
     div_int_en                  = 1'b0;
+    ppu_en                      = 1'b0;
     multdiv_operator_o          = MD_OP_MULL;
     multdiv_signed_mode_o       = 2'b00;
 
@@ -466,6 +479,46 @@ module zeroriscy_decoder
         end
       end
 
+      ////////////////////////////////
+      // _______  _______  __   __  //
+      //|       ||       ||  | |  | //  
+      //|    _  ||    _  ||  | |  | //
+      //|   |_| ||   |_| ||  |_|  | //
+      //|    ___||    ___||       | //
+      //|   |    |   |    |       | //
+      //|___|    |___|    |_______| //
+      ////////////////////////////////
+
+      OPCODE_PPU_OP: begin // Register-Register PPU operations
+        ppu_en = 1'b1;
+        regfile_we     = 1'b1;
+
+        unique case ({instr_rdata_i[30:25], instr_rdata_i[14:12]})
+            {6'b101010, 3'b000}: ppu_operator_o = PPU_ADD; // Add
+            {6'b101010, 3'b001}: ppu_operator_o = PPU_SUB; // Sub
+            {6'b101010, 3'b010}: ppu_operator_o = PPU_MUL; // Mul
+            {6'b101010, 3'b100}: ppu_operator_o = PPU_DIV; // Div
+            default: begin
+              illegal_insn_o = 1'b1;
+            end     
+        endcase 
+      end
+
+      OPCODE_PPU_OPIMM: begin
+        ppu_en = 1'b1;
+        ppu_op_b_mux_sel_o  = OP_B_IMM;
+        imm_b_mux_sel_o     = IMMB_I;
+        regfile_we          = 1'b1;
+        unique case (instr_rdata_i[14:12])
+          3'b000: ppu_operator_o = PPU_ADD;  // Add Immediate
+          3'b010: ppu_operator_o = PPU_SUB; // Set to one if Lower Than Immediate
+          3'b011: ppu_operator_o = PPU_MUL; // Set to one if Lower Than Immediate Unsigned
+          3'b100: ppu_operator_o = PPU_DIV;  // Exclusive Or with Immediate
+          default: illegal_insn_o = 1'b1;
+        endcase
+      end
+
+
 
 
 
@@ -582,6 +635,7 @@ module zeroriscy_decoder
   assign regfile_we_o      = (deassert_we_i) ? 1'b0          : regfile_we;
   assign mult_int_en_o     = RV32M ? ((deassert_we_i) ? 1'b0 : mult_int_en) : 1'b0;
   assign div_int_en_o      = RV32M ? ((deassert_we_i) ? 1'b0 : div_int_en ) : 1'b0;
+  assign ppu_en_o          = (deassert_we_i) ? 1'b0          : ppu_en;
   assign data_req_o        = (deassert_we_i) ? 1'b0          : data_req;
   assign csr_op_o          = (deassert_we_i) ? CSR_OP_NONE   : csr_op;
   assign jump_in_id_o      = (deassert_we_i) ? 1'b0          : jump_in_id;

@@ -182,6 +182,7 @@ module zeroriscy_id_stage
   logic        instr_multicyle;
   logic        load_stall;
   logic        multdiv_stall;
+  logic        ppu_stall;
   logic        branch_stall;
   logic        jump_stall;
 
@@ -330,7 +331,13 @@ module zeroriscy_id_stage
       OP_A_IMM:          alu_operand_a = imm_a;
       default:           alu_operand_a = operand_a_fw_id;
     endcase; // case (alu_op_a_mux_sel)
-    // ToDo: from here!!!
+    
+    case (ppu_op_a_mux_sel)
+      OP_A_REGA_OR_FWD:  ppu_operand_a = operand_a_fw_id;
+      OP_A_CURRPC:       ppu_operand_a = pc_id_i;
+      OP_A_IMM:          ppu_operand_a = imm_a;
+      default:           ppu_operand_a = operand_a_fw_id;   
+    endcase
   end
 
   always_comb
@@ -381,7 +388,7 @@ module zeroriscy_id_stage
       endcase
     end
 
-  // ALU_Op_b Mux
+  // PPU_Op_b / ALU_Op_b Mux
   always_comb
     begin : alu_operand_b_mux
       case (alu_op_b_mux_sel)
@@ -389,6 +396,13 @@ module zeroriscy_id_stage
         OP_B_IMM:          operand_b = imm_b;
         default:           operand_b = regfile_data_rb_id;
       endcase // case (alu_op_b_mux_sel)
+
+      case (ppu_op_b_mux_sel)
+        OP_B_REGB_OR_FWD:  ppu_operand_b = regfile_data_rb_id;
+        OP_B_IMM:          ppu_operand_b = imm_b;
+        default:           ppu_operand_b = regfile_data_rb_id;
+      endcase // case (ppu_op_b_mux_sel)
+
     end
 
   assign alu_operand_b   = operand_b;
@@ -712,6 +726,7 @@ module zeroriscy_id_stage
     regfile_we      = regfile_we_id;
     load_stall      = 1'b0;
     multdiv_stall   = 1'b0;
+    ppu_stall       = 1'b0;
     jump_stall      = 1'b0;
     branch_stall    = 1'b0;
     select_data_rf  = RF_EX;
@@ -751,6 +766,13 @@ module zeroriscy_id_stage
             multdiv_stall   = 1'b1;
             instr_multicyle = 1'b1;
           end
+          ppu_en: begin
+            //PPU operation
+            regfile_we      = 1'b0;
+            id_wb_fsm_ns    = WAIT_MULTICYCLE;
+            ppu_stall       = 1'b1;
+            instr_multicyle = 1'b1;
+          end
           jump_in_id: begin
             //UnCond Branch operation
             regfile_we      = 1'b0;
@@ -770,6 +792,7 @@ module zeroriscy_id_stage
           id_wb_fsm_ns   = IDLE;
           load_stall     = 1'b0;
           multdiv_stall  = 1'b0;
+          ppu_stall      = 1'b0;
           select_data_rf = data_req_id ? RF_LSU : RF_EX;
         end else begin
           regfile_we      = 1'b0;
@@ -779,6 +802,8 @@ module zeroriscy_id_stage
               load_stall    = 1'b1;
             multdiv_int_en:
               multdiv_stall = 1'b1;
+            ppu_en:
+              ppu_stall     = 1'b1;
             default:;
           endcase
         end
@@ -789,7 +814,7 @@ module zeroriscy_id_stage
   end
 
   // stall control
-  assign id_ready_o = (~load_stall) & (~branch_stall) & (~jump_stall) & (~multdiv_stall);
+  assign id_ready_o = (~load_stall) & (~branch_stall) & (~jump_stall) & (~multdiv_stall) & (~ppu_stall);
   
   assign id_valid_o = (~halt_id) & id_ready_o;
 

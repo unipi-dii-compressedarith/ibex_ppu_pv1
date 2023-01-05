@@ -76,13 +76,14 @@ module zeroriscy_ex_block
 
   localparam MULT_TYPE = 1; //0 is SLOW
 
-  logic [31:0] alu_result, multdiv_result;
+  logic [31:0] alu_result, multdiv_result, ppu_result;
 
   logic [32:0] multdiv_alu_operand_b, multdiv_alu_operand_a;
   logic [33:0] alu_adder_result_ext;
   logic        alu_cmp_result, alu_is_equal_result;
   logic        multdiv_ready, multdiv_en_sel;
   logic        multdiv_en;
+  logic        ppu_en;
   logic        ppu_ready;
 
 /*
@@ -100,7 +101,9 @@ end else begin
 end
 endgenerate
 
-  assign regfile_wdata_ex_o = multdiv_en ? multdiv_result : alu_result;
+  assign ppu_en = ppu_en_i;
+
+  assign regfile_wdata_ex_o = multdiv_en ? multdiv_result : ppu_en ? ppu_result : alu_result;
 
   // branch handling
   assign branch_decision_o  = alu_cmp_result;
@@ -198,7 +201,7 @@ ppu_top ppu_top_inst(
     .ppu_in1(ppu_operand_a_i),
     .ppu_in2(ppu_operand_b_i),
     .ppu_op(ppu_operator_i),
-    .ppu_out(ppu_result_o),
+    .ppu_out(ppu_result),
     .ppu_valid_o(ppu_ready)
 );
 

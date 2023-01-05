@@ -135,6 +135,13 @@ module zeroriscy_core
   logic [31:0] alu_adder_result_ex; // Used to forward computed address to LSU
   logic [31:0] regfile_wdata_ex;
 
+  // PPU Control
+  logic        ppu_en_ex;
+  logic [PPU_OP_WIDTH-1:0]  ppu_operator_ex;
+  logic [31:0] ppu_operand_a_ex;
+  logic [31:0] ppu_operand_b_ex;
+  logic [31:0] ppu_result_ex;
+
   // Multiplier Control
   logic        mult_en_ex;
   logic        div_en_ex;
@@ -393,6 +400,12 @@ module zeroriscy_core
     .alu_operand_a_ex_o           ( alu_operand_a_ex     ),
     .alu_operand_b_ex_o           ( alu_operand_b_ex     ),
 
+    // PPU Signals
+    .ppu_operator_ex_o            ( ppu_operator_ex      ),
+    .ppu_operand_a_ex_o           ( ppu_operand_a_ex     ),
+    .ppu_operand_b_ex_o           ( ppu_operand_b_ex     ),
+    .ppu_en_ex_o                  ( ppu_en_ex            ),
+
     .mult_en_ex_o                 ( mult_en_ex             ),
     .div_en_ex_o                  ( div_en_ex              ),
     .multdiv_operator_ex_o        ( multdiv_operator_ex    ),
@@ -478,6 +491,13 @@ module zeroriscy_core
     .alu_operand_a_i            ( alu_operand_a_ex      ),
     .alu_operand_b_i            ( alu_operand_b_ex      ),
 
+    // PPU Signals from ID stage
+    .ppu_en_i                   ( ppu_en_ex             ),
+    .ppu_operator_i             ( ppu_operator_ex       ),
+    .ppu_operand_a_i            ( ppu_operand_a_ex      ),
+    .ppu_operand_b_i            ( ppu_operand_b_ex      ),
+    .ppu_result_o               ( ppu_result_ex         ),
+
     // Multipler
     .mult_en_i                  ( mult_en_ex            ),
     .div_en_i                   ( div_en_ex             ),
@@ -533,6 +553,9 @@ module zeroriscy_core
     .data_req_ex_i         ( data_req_ex        ),
 
     .adder_result_ex_i     ( alu_adder_result_ex),
+
+    // PPU Result from Execution stage
+    .ppu_result_ex_i       ( ppu_result_ex      ),
 
     .data_misaligned_o     ( data_misaligned    ),
     .misaligned_addr_o     ( misaligned_addr    ),

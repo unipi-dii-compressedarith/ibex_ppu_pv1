@@ -55,6 +55,9 @@ module zeroriscy_load_store_unit
     input  logic         data_req_ex_i,        // data request                      -> from ex stage
 
     input  logic [31:0]  adder_result_ex_i,
+    
+    // PPU signal from ex stage
+    input  logic [31:0]  ppu_result_ex_i,
 
     output logic         data_misaligned_o,    // misaligned access was detected    -> to controller
     output logic [31:0]  misaligned_addr_o,

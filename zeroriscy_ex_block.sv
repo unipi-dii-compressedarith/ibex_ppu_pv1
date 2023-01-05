@@ -39,6 +39,14 @@ module zeroriscy_ex_block
   input  logic        clk,
   input  logic        rst_n,
 
+  // PPU signals from ID stage
+  input logic [31:0]  ppu_operand_a_i,
+  input logic [31:0]  ppu_operand_b_i,
+  input logic [PPU_OP_WIDTH-1:0]   ppu_operator_i,
+  input logic ppu_en_i,
+  output logic [31:0] ppu_result_o,
+
+
   // ALU signals from ID stage
   input  logic [ALU_OP_WIDTH-1:0] alu_operator_i,
   input  logic [1:0]              multdiv_operator_i,
@@ -75,6 +83,7 @@ module zeroriscy_ex_block
   logic        alu_cmp_result, alu_is_equal_result;
   logic        multdiv_ready, multdiv_en_sel;
   logic        multdiv_en;
+  logic        ppu_ready;
 
 /*
   The multdiv_i output is never selected if RV32M=0
@@ -172,6 +181,27 @@ endgenerate
   end
   endgenerate
 
+////////////////////////////////
+// _______  _______  __   __  //
+//|       ||       ||  | |  | //  
+//|    _  ||    _  ||  | |  | //
+//|   |_| ||   |_| ||  |_|  | //
+//|    ___||    ___||       | //
+//|   |    |   |    |       | //
+//|___|    |___|    |_______| //
+////////////////////////////////
+
+ppu_top ppu_top_inst(
+  	.clk(clk),
+    .rst(rst_n),
+    .ppu_valid_in(ppu_en_i),
+    .ppu_in1(ppu_operand_a_i),
+    .ppu_in2(ppu_operand_b_i),
+    .ppu_op(ppu_operator_i),
+    .ppu_out(ppu_result_o),
+    .ppu_valid_o(ppu_ready)
+);
+
   always_comb
   begin
       unique case (1'b1)
@@ -179,6 +209,8 @@ endgenerate
           ex_ready_o = multdiv_ready;
         lsu_en_i:
           ex_ready_o = lsu_ready_ex_i;
+        ppu_en_i:
+          ex_ready_o = ppu_ready;
         default:
           //1 Cycle case
           ex_ready_o = 1'b1;

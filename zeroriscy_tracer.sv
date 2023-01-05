@@ -21,7 +21,6 @@
 // Description:    Traces the executed instructions                           //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-
 `ifndef VERILATOR
 
 
@@ -87,7 +86,7 @@ module zeroriscy_tracer
   input  logic [31:0] imm_s_type,
   input  logic [31:0] imm_sb_type
 );
-
+`ifdef TRACE_INSTR
   integer      f;
   string       fn;
   integer      cycles;
@@ -439,6 +438,6 @@ module zeroriscy_tracer
 
     end
   end // always @ (posedge clk)
-
+`endif
 endmodule
 `endif

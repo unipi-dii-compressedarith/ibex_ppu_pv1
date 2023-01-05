@@ -84,6 +84,12 @@ module zeroriscy_id_stage
     output logic [31:0] alu_operand_a_ex_o,
     output logic [31:0] alu_operand_b_ex_o,
 
+    // PPU
+    output logic        ppu_en_ex_o,
+    output logic [PPU_OP_WIDTH-1:0]  ppu_operator_ex_o,
+    output logic [31:0] ppu_operand_a_ex_o,
+    output logic [31:0] ppu_operand_b_ex_o,
+
     // MUL, DIV
     output logic        mult_en_ex_o,
     output logic        div_en_ex_o,
@@ -225,6 +231,12 @@ module zeroriscy_id_stage
   logic [0:0]  imm_a_mux_sel;
   logic [3:0]  imm_b_mux_sel;
 
+  // PPU Control
+  logic [PPU_OP_WIDTH-1:0] ppu_operator;
+  logic [2:0]  ppu_op_a_mux_sel;
+  logic [2:0]  ppu_op_b_mux_sel;
+  logic ppu_en;
+
   // Multiplier Control
   logic        mult_int_en;      // use integer multiplier
   logic        div_int_en;      // use integer division or reminder
@@ -255,6 +267,9 @@ module zeroriscy_id_stage
 
   logic [31:0] alu_operand_a;
   logic [31:0] alu_operand_b;
+
+  logic [31:0] ppu_operand_a;
+  logic [31:0] ppu_operand_b;
 
   assign instr = instr_rdata_i;
 
@@ -315,6 +330,7 @@ module zeroriscy_id_stage
       OP_A_IMM:          alu_operand_a = imm_a;
       default:           alu_operand_a = operand_a_fw_id;
     endcase; // case (alu_op_a_mux_sel)
+    // ToDo: from here!!!
   end
 
   always_comb
@@ -481,6 +497,13 @@ module zeroriscy_id_stage
     .div_int_en_o                    ( div_int_en                ),
     .multdiv_operator_o              ( multdiv_operator          ),
     .multdiv_signed_mode_o           ( multdiv_signed_mode       ),
+
+    // PPU signals
+    .ppu_operator_o                  ( ppu_operator              ),
+    .ppu_op_a_mux_sel_o              ( ppu_op_a_mux_sel          ),
+    .ppu_op_b_mux_sel_o              ( ppu_op_b_mux_sel          ),
+    .ppu_en_o                        ( ppu_en                    ),
+
     // Register file control signals
     .regfile_we_o                    ( regfile_we_id             ),
 
@@ -643,6 +666,10 @@ module zeroriscy_id_stage
   assign alu_operand_a_ex_o          = alu_operand_a;
   assign alu_operand_b_ex_o          = alu_operand_b;
 
+  assign ppu_operator_ex_o           = ppu_operator;
+  assign ppu_operand_a_ex_o          = ppu_operand_a;
+  assign ppu_operand_b_ex_o          = ppu_operand_b;
+
   assign csr_access_ex_o             = csr_access;
   assign csr_op_ex_o                 = csr_op;
 
@@ -650,6 +677,7 @@ module zeroriscy_id_stage
 
   assign mult_en_ex_o                = mult_int_en;
   assign div_en_ex_o                 = div_int_en;
+  assign ppu_en_ex_o                 = ppu_en;
 
   assign multdiv_operator_ex_o       = multdiv_operator;
   assign multdiv_signed_mode_ex_o    = multdiv_signed_mode;

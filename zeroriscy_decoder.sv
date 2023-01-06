@@ -492,12 +492,12 @@ module zeroriscy_decoder
       OPCODE_PPU_OP: begin // Register-Register PPU operations
         ppu_en = 1'b1;
         regfile_we     = 1'b1;
-
-        unique case ({instr_rdata_i[30:25], instr_rdata_i[14:12]})
-            {6'b101010, 3'b000}: ppu_operator_o = PPU_ADD; // Add
-            {6'b101010, 3'b001}: ppu_operator_o = PPU_SUB; // Sub
-            {6'b101010, 3'b010}: ppu_operator_o = PPU_MUL; // Mul
-            {6'b101010, 3'b100}: ppu_operator_o = PPU_DIV; // Div
+        $display("%t Op: %b", $time, instr_rdata_i[31:0]);
+        unique case ({instr_rdata_i[31:25], instr_rdata_i[14:12]})
+            {7'b1101010, 3'b000}: ppu_operator_o = PPU_ADD; // Add
+            {7'b1101010, 3'b001}: ppu_operator_o = PPU_SUB; // Sub
+            {7'b1101010, 3'b010}: ppu_operator_o = PPU_MUL; // Mul
+            {7'b1101010, 3'b100}: ppu_operator_o = PPU_DIV; // Div
             default: begin
               illegal_insn_o = 1'b1;
             end     

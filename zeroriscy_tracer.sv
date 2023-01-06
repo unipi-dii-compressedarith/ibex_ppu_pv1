@@ -376,6 +376,13 @@ module zeroriscy_tracer
         INSTR_SRA:        trace.printRInstr("sra");
         INSTR_OR:         trace.printRInstr("or");
         INSTR_AND:        trace.printRInstr("and");
+
+        // PPU OP
+        INSTR_PPU_ADD:        trace.printRInstr("padd");
+        INSTR_PPU_SUB:        trace.printRInstr("psub");
+        INSTR_PPU_MUL:        trace.printRInstr("pmul");
+        INSTR_PPU_DIV:        trace.printRInstr("pdiv");
+
         // SYSTEM (CSR manipulation)
         INSTR_CSRRW:      trace.printCSRInstr("csrrw");
         INSTR_CSRRS:      trace.printCSRInstr("csrrs");

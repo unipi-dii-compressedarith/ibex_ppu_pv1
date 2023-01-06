@@ -220,4 +220,11 @@ ppu_top ppu_top_inst(
       endcase
   end
 
+  always @ (posedge clk)
+  begin
+   if(ppu_ready)
+    $display("%t ppu_ready %d", $time, ppu_ready);
+    $display("%t ppu_result %d", $time, ppu_result);
+    $display("%t ppu_enable %d", $time, ppu_en_i);
+  end
 endmodule

@@ -196,7 +196,7 @@ endgenerate
 
 ppu_top ppu_top_inst(
   	.clk(clk),
-    .rst(rst_n),
+    .rst(~rst_n), // zeroriscy uses active low reset, PPU uses active high reset
     .ppu_valid_in(ppu_en_i),
     .ppu_in1(ppu_operand_a_i),
     .ppu_in2(ppu_operand_b_i),

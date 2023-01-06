@@ -6,6 +6,7 @@
 //        .test_en_i ( test_en_i                             ),
 //        .clk_o     ( mem_clocks[x]                         )
 //      );
+`ifdef DUMMY_CLOCK_GATING
 module cluster_clock_gating (
     input  wire clk_i,
     input  wire en_i,
@@ -18,3 +19,4 @@ module cluster_clock_gating (
 
     // End of module
 endmodule
+`endif

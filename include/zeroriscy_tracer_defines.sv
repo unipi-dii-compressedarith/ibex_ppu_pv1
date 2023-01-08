@@ -53,6 +53,8 @@ parameter INSTR_PPU_ADD      =  { 7'b1101010, 10'b?, 3'b000, 5'b?, OPCODE_PPU_OP
 parameter INSTR_PPU_SUB      =  { 7'b1101010, 10'b?, 3'b001, 5'b?, OPCODE_PPU_OP };
 parameter INSTR_PPU_MUL     =  { 7'b1101010, 10'b?, 3'b010, 5'b?, OPCODE_PPU_OP };
 parameter INSTR_PPU_DIV     =  { 7'b1101010, 10'b?, 3'b100, 5'b?, OPCODE_PPU_OP };
+parameter INSTR_PPU_F2P     =  { 7'b1101000, 10'b?, 3'b000, 5'b?, OPCODE_PPU_OP };
+parameter INSTR_PPU_P2F    =   { 7'b1101001, 10'b?, 3'b000, 5'b?, OPCODE_PPU_OP };
 
 // SYSTEM
 parameter INSTR_CSRRW    =  { 17'b?, 3'b001, 5'b?, OPCODE_SYSTEM };

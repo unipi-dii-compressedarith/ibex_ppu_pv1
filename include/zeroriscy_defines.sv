@@ -86,6 +86,7 @@ parameter PPU_SUB = 3'd1;
 parameter PPU_MUL = 3'd2;
 parameter PPU_DIV = 3'd3;
 parameter FLOAT_TO_POSIT = 3'd4;
+parameter POSIT_TO_FLOAT = 3'd5;
 
 
 

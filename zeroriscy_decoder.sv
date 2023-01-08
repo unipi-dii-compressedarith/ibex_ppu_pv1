@@ -498,6 +498,9 @@ module zeroriscy_decoder
             {7'b1101010, 3'b001}: ppu_operator_o = PPU_SUB; // Sub
             {7'b1101010, 3'b010}: ppu_operator_o = PPU_MUL; // Mul
             {7'b1101010, 3'b100}: ppu_operator_o = PPU_DIV; // Div
+            {7'b1101000, 3'b000}: ppu_operator_o = FLOAT_TO_POSIT; //  Float 2 Posit
+            {7'b1101001, 3'b000}: ppu_operator_o = POSIT_TO_FLOAT; // Posit 2 Float
+
             default: begin
               illegal_insn_o = 1'b1;
             end     

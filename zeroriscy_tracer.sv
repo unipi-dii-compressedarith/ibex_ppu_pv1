@@ -382,6 +382,8 @@ module zeroriscy_tracer
         INSTR_PPU_SUB:        trace.printRInstr("psub");
         INSTR_PPU_MUL:        trace.printRInstr("pmul");
         INSTR_PPU_DIV:        trace.printRInstr("pdiv");
+        INSTR_PPU_F2P:        trace.printRInstr("fcvt.p");
+        INSTR_PPU_P2F:        trace.printRInstr("pcvt.f");
 
         // SYSTEM (CSR manipulation)
         INSTR_CSRRW:      trace.printCSRInstr("csrrw");

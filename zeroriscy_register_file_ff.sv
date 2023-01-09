@@ -25,7 +25,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 `include "zeroriscy_config.sv"
-`ifdef USE_RF_FF
 module zeroriscy_register_file
 #(
   parameter RV32E         = 0,
@@ -101,4 +100,3 @@ module zeroriscy_register_file
   assign rdata_b_o = rf_reg[raddr_b_i];
 
 endmodule
-`endif

@@ -398,7 +398,8 @@ module zeroriscy_id_stage
       endcase // case (alu_op_b_mux_sel)
 
       case (ppu_op_b_mux_sel)
-        OP_B_REGB_OR_FWD:  ppu_operand_b = regfile_data_rb_id;
+        // POSIT_TO_FLOAT conversion is a special case where the operand_a is used as operand_b in PPU
+        OP_B_REGB_OR_FWD:  ppu_operand_b = (ppu_operator == POSIT_TO_FLOAT)?ppu_operand_a:regfile_data_rb_id;
         OP_B_IMM:          ppu_operand_b = imm_b;
         default:           ppu_operand_b = regfile_data_rb_id;
       endcase // case (ppu_op_b_mux_sel)

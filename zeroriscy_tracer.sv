@@ -90,7 +90,7 @@ module zeroriscy_tracer
   string       fn;
   integer      cycles;
   logic [ 4:0] rd, rs1, rs2, rs3;
-
+`ifndef SV2V  
   typedef struct {
     logic [(REG_ADDR_WIDTH-1):0] addr;
     logic [31:0] value;
@@ -103,7 +103,6 @@ module zeroriscy_tracer
     logic [31:0] wdata;
     logic [31:0] rdata;
   } mem_acc_t;
-
   class instr_trace_t;
     time         simtime;
     integer      cycles;
@@ -292,7 +291,6 @@ module zeroriscy_tracer
 
   mailbox #(instr_trace_t) instr_ex = new ();
   mailbox #(instr_trace_t) instr_wb = new ();
-
   // cycle counter
   always_ff @(posedge clk, negedge rst_n)
   begin
@@ -446,5 +444,7 @@ module zeroriscy_tracer
 
     end
   end // always @ (posedge clk)
+  `endif
+
 endmodule
 `endif

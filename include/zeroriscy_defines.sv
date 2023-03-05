@@ -78,6 +78,10 @@ parameter REGC_ZERO = 2'b11;
 //                               |_|                                          //
 ////////////////////////////////////////////////////////////////////////////////
 
+// Multi-PPU configuration
+parameter MULTI_PPU = 1;
+parameter PPU_NUM = 2;
+
 // ToDO: we should have these from a ppu_pkg file instead of hardcoding them here
 parameter PPU_OP_WIDTH = 3;
 

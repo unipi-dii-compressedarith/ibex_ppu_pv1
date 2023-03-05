@@ -84,6 +84,7 @@ module zeroriscy_ex_block
   logic        multdiv_ready, multdiv_en_sel;
   logic        multdiv_en;
   logic        ppu_en;
+  logic [PPU_NUM-1:0] ppu_ready_v; 
   logic        ppu_ready;
 
 /*
@@ -102,7 +103,6 @@ end
 endgenerate
 
   assign ppu_en = ppu_en_i;
-
   assign regfile_wdata_ex_o = multdiv_en ? multdiv_result : ppu_en ? ppu_result : alu_result;
 
   // branch handling
@@ -193,17 +193,49 @@ endgenerate
 //|   |    |   |    |       | //
 //|___|    |___|    |_______| //
 ////////////////////////////////
+genvar i;
+generate
+  if (MULTI_PPU == 0) begin : ppu_single
+    ppu_top ppu_top_inst(
+        .clk(clk),
+        .rst(~rst_n), // zeroriscy uses active low reset, PPU uses active high reset
+        .ppu_valid_in(ppu_en_i),
+        .ppu_in1(ppu_operand_a_i),
+        .ppu_in2(ppu_operand_b_i),
+        .ppu_op(ppu_operator_i),
+        .ppu_out(ppu_result),
+        .ppu_valid_o(ppu_ready)
+    );
+  end else begin : ppu_multi
+    // generate PPU_NUM instances of ppu_top
+    // all the operands are already contained inside ppu_operand_a and ppu_operand b
+    // first operand for first PPU is contained inside ppu_operand_a_i[0:31/PPU_NUM]
+    // first operand for second PPU is contained inside ppu_operand_a_i[31/PPU_NUM+1: 2*31/PPU_NUM]
+    // first operand for third PPU is contained inside ppu_operand_a_i[2*31/PPU_NUM+1: 3*31/PPU_NUM]
+    // and so on
+    // example for PPU_NUM = 2
+    // ppu_operand_a_i[0:15] is the first operand for the first PPU
+    // ppu_operand_a_i[16:31] is the first operand for the second PPU
+    // ppu_operand_b_i[0:15] is the second operand for the first PPU
+    // ppu_operand_b_i[16:31] is the second operand for the second PPU
+    // ppu_result[0:15] is the result for the first PPU
+    // ppu_result[16:31] is the result for the second PPU
+      for (i = 0; i < PPU_NUM; i = i + 1) begin : ppu
+        ppu_top ppu_top_inst(
+            .clk(clk),
+            .rst(~rst_n), // zeroriscy uses active low reset, PPU uses active high reset
+            .ppu_valid_in(ppu_en_i),
+            .ppu_in1(ppu_operand_a_i[32/PPU_NUM*i+:32/PPU_NUM]),
+            .ppu_in2(ppu_operand_b_i[32/PPU_NUM*i+:32/PPU_NUM]),
+            .ppu_op(ppu_operator_i),
+            .ppu_out(ppu_result[32/PPU_NUM*i+:32/PPU_NUM]),
+            .ppu_valid_o(ppu_ready_v[i])
+        );
+      end
+      assign ppu_ready = ppu_ready_v[0];
+  end
+endgenerate
 
-ppu_top ppu_top_inst(
-  	.clk(clk),
-    .rst(~rst_n), // zeroriscy uses active low reset, PPU uses active high reset
-    .ppu_valid_in(ppu_en_i),
-    .ppu_in1(ppu_operand_a_i),
-    .ppu_in2(ppu_operand_b_i),
-    .ppu_op(ppu_operator_i),
-    .ppu_out(ppu_result),
-    .ppu_valid_o(ppu_ready)
-);
 
   always_comb
   begin
@@ -222,9 +254,11 @@ ppu_top ppu_top_inst(
 
   always @ (posedge clk)
   begin
-   if(ppu_ready)
-    $display("%t ppu_ready %d", $time, ppu_ready);
-    $display("%t ppu_result %d", $time, ppu_result);
-    $display("%t ppu_enable %d", $time, ppu_en_i);
+    $display("ppu_valid_o: %b", ppu_ready);
+    $display("ppu_en: %h", ppu_en_i);
+
+    $display("ppu_result: %h", ppu_result);
   end
+
+
 endmodule

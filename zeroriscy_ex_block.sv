@@ -197,14 +197,14 @@ genvar i;
 generate
   if (MULTI_PPU == 0) begin : ppu_single
     ppu_top ppu_top_inst(
-        .clk(clk),
-        .rst(~rst_n), // zeroriscy uses active low reset, PPU uses active high reset
-        .ppu_valid_in(ppu_en_i),
-        .ppu_in1(ppu_operand_a_i),
-        .ppu_in2(ppu_operand_b_i),
-        .ppu_op(ppu_operator_i),
-        .ppu_out(ppu_result),
-        .ppu_valid_o(ppu_ready)
+        .clk_i(clk),
+        .rst_i(~rst_n), // zeroriscy uses active low reset, PPU uses active high reset
+        .in_valid_i(ppu_en_i),
+        .operand1_i(ppu_operand_a_i),
+        .operand2_i(ppu_operand_b_i),
+        .op_i(ppu_operator_i),
+        .result_o(ppu_result),
+        .out_valid_o(ppu_ready)
     );
   end else begin : ppu_multi
     // generate PPU_NUM instances of ppu_top
@@ -222,14 +222,14 @@ generate
     // ppu_result[16:31] is the result for the second PPU
       for (i = 0; i < PPU_NUM; i = i + 1) begin : ppu
         ppu_top ppu_top_inst(
-            .clk(clk),
-            .rst(~rst_n), // zeroriscy uses active low reset, PPU uses active high reset
-            .ppu_valid_in(ppu_en_i),
-            .ppu_in1(ppu_operand_a_i[32/PPU_NUM*i+:32/PPU_NUM]),
-            .ppu_in2(ppu_operand_b_i[32/PPU_NUM*i+:32/PPU_NUM]),
-            .ppu_op(ppu_operator_i),
-            .ppu_out(ppu_result[32/PPU_NUM*i+:32/PPU_NUM]),
-            .ppu_valid_o(ppu_ready_v[i])
+            .clk_i(clk),
+            .rst_i(~rst_n), // zeroriscy uses active low reset, PPU uses active high reset
+            .in_valid_i(ppu_en_i),
+            .operand1_i(ppu_operand_a_i[32/PPU_NUM*i+:32/PPU_NUM]),
+            .operand2_i(ppu_operand_b_i[32/PPU_NUM*i+:32/PPU_NUM]),
+            .op_i(ppu_operator_i),
+            .result_o(ppu_result[32/PPU_NUM*i+:32/PPU_NUM]),
+            .out_valid_o(ppu_ready_v[i])
         );
       end
       assign ppu_ready = ppu_ready_v[0];

@@ -64,6 +64,7 @@ module zeroriscy_tracer
   input  logic        csr_status,
   input  logic [31:0] rs1_value,
   input  logic [31:0] rs2_value,
+  input  logic [31:0] rs3_value,
   input  logic [31:0] lsu_value,
 
   input  logic [(REG_ADDR_WIDTH-1):0] ex_reg_addr,
@@ -87,7 +88,7 @@ module zeroriscy_tracer
   input  logic [31:0] imm_sb_type
 );
   integer      f;
-  string       fn;
+  // string       fn;  CHANGE: string is unknown type
   integer      cycles;
   logic [ 4:0] rd, rs1, rs2, rs3;
 `ifndef SV2V  
@@ -96,6 +97,7 @@ module zeroriscy_tracer
     logic [31:0] value;
   } reg_t;
 
+
   typedef struct {
     logic [31:0] addr;
     logic        we;
@@ -103,12 +105,14 @@ module zeroriscy_tracer
     logic [31:0] wdata;
     logic [31:0] rdata;
   } mem_acc_t;
+  endmodule : zeroriscy_tracer
+
   class instr_trace_t;
     time         simtime;
     integer      cycles;
     logic [31:0] pc;
     logic [31:0] instr;
-    string       str;
+    //string       str;  CHANGE: string is unknown type
     reg_t        regs_read[$];
     reg_t        regs_write[$];
     mem_acc_t    mem_access[$];
@@ -380,6 +384,8 @@ module zeroriscy_tracer
         INSTR_PPU_SUB:        trace.printRInstr("psub");
         INSTR_PPU_MUL:        trace.printRInstr("pmul");
         INSTR_PPU_DIV:        trace.printRInstr("pdiv");
+        INSTR_PPU_FMADD_S:    trace.printRInstr("pfmadd_s");  // CHANGE
+        INSTR_PPU_FMADD_C:    trace.printRInstr("pfmadd_s");  // CHANGE
         INSTR_PPU_F2P:        trace.printRInstr("fcvt.p");
         INSTR_PPU_P2F:        trace.printRInstr("pcvt.f");
 

@@ -69,6 +69,7 @@ module zeroriscy_decoder
   output logic [PPU_OP_WIDTH-1:0] ppu_operator_o,   // PPU operation
   output logic [2:0]  ppu_op_a_mux_sel_o,     // operand a selection: reg value, PC, immediate or zero
   output logic [2:0]  ppu_op_b_mux_sel_o,     // operand b selection: reg value or immediate
+  output logic [2:0]  ppu_op_c_mux_sel_o,     // operand c selection: reg value or immediate  // CHANGE
   
   // register file related signals
   output logic        regfile_we_o,            // write enable for regfile
@@ -125,6 +126,7 @@ module zeroriscy_decoder
     ppu_operator_o              = PPU_ADD;
     ppu_op_a_mux_sel_o          = OP_A_REGA_OR_FWD;
     ppu_op_b_mux_sel_o          = OP_B_REGB_OR_FWD;
+    ppu_op_c_mux_sel_o          = OP_C_REGC_OR_FWD; // CHANGE
 
     imm_a_mux_sel_o             = IMMA_ZERO;
     imm_b_mux_sel_o             = IMMB_I;
@@ -498,10 +500,12 @@ module zeroriscy_decoder
             {7'b1101010, 3'b001}: ppu_operator_o = PPU_SUB; // Sub
             {7'b1101010, 3'b010}: ppu_operator_o = PPU_MUL; // Mul
             {7'b1101010, 3'b100}: ppu_operator_o = PPU_DIV; // Div
+            {7'b1101100, 3'b000}: ppu_operator_o = FMADD_S; // FMADD start
+            {7'b1101101, 3'b000}: ppu_operator_o = FMADD_C; // FMADD continue  // CHANGE
             {7'b1101000, 3'b000}: ppu_operator_o = FLOAT_TO_POSIT; //  Float 2 Posit
             {7'b1101001, 3'b000}: ppu_operator_o = POSIT_TO_FLOAT; // Posit 2 Float
 
-            default: begin
+          default: begin
               illegal_insn_o = 1'b1;
             end     
         endcase 
@@ -510,6 +514,7 @@ module zeroriscy_decoder
       OPCODE_PPU_OPIMM: begin
         ppu_en = 1'b1;
         ppu_op_b_mux_sel_o  = OP_B_IMM;
+        // ppu_op_c_mux_sel_o  = OP_C_IMM;  // CHANGE
         imm_b_mux_sel_o     = IMMB_I;
         regfile_we          = 1'b1;
         unique case (instr_rdata_i[14:12])
@@ -644,4 +649,4 @@ module zeroriscy_decoder
   assign jump_in_id_o      = (deassert_we_i) ? 1'b0          : jump_in_id;
   assign branch_in_id_o    = (deassert_we_i) ? 1'b0          : branch_in_id;
 
-endmodule // controller
+endmodule : zeroriscy_decoder // controller

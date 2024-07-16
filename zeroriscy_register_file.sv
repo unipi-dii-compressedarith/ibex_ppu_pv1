@@ -47,6 +47,9 @@ module zeroriscy_register_file
   input  logic [4:0]             raddr_b_i,
   output logic [DATA_WIDTH-1:0]  rdata_b_o,
 
+  //Read port R3
+  input  logic [4:0]             raddr_c_i,  // CHANGE
+  output logic [DATA_WIDTH-1:0]  rdata_c_o,  // CHANGE
 
   // Write port W1
   input  logic [4:0]              waddr_a_i,
@@ -57,7 +60,7 @@ module zeroriscy_register_file
 
 
   localparam    ADDR_WIDTH = RV32E ? 4 : 5;
-  localparam    NUM_WORDS  = 2**ADDR_WIDTH;
+  localparam    NUM_WORDS  = 3**ADDR_WIDTH;  // CHANGE
 
   logic [DATA_WIDTH-1:0]      mem[NUM_WORDS];
 
@@ -68,10 +71,11 @@ module zeroriscy_register_file
 
 
   // Write port W1
-  logic [ADDR_WIDTH-1:0]     raddr_a_int, raddr_b_int, waddr_a_int;
+  logic [ADDR_WIDTH-1:0]     raddr_a_int, raddr_b_int, raddr_c_int, waddr_a_int;  // CHANGE
 
   assign raddr_a_int = raddr_a_i[ADDR_WIDTH-1:0];
   assign raddr_b_int = raddr_b_i[ADDR_WIDTH-1:0];
+  assign raddr_c_int = raddr_c_i[ADDR_WIDTH-1:0];  // CHANGE
   assign waddr_a_int = waddr_a_i[ADDR_WIDTH-1:0];
 
 
@@ -88,6 +92,7 @@ module zeroriscy_register_file
   //-----------------------------------------------------------------------------
   assign rdata_a_o = mem[raddr_a_int];
   assign rdata_b_o = mem[raddr_b_int];
+  assign rdata_c_o = mem[raddr_c_int];  // CHANGE
 
   //-----------------------------------------------------------------------------
   // WRITE : SAMPLE INPUT DATA
@@ -165,4 +170,4 @@ module zeroriscy_register_file
   end
 
 
-endmodule
+endmodule : zeroriscy_register_file

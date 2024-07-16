@@ -25,7 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 `include "zeroriscy_config.sv"
-module zeroriscy_register_file
+module zeroriscy_register_file_ff  // CHANGE
 #(
   parameter RV32E         = 0,
   parameter DATA_WIDTH    = 32
@@ -45,6 +45,9 @@ module zeroriscy_register_file
   input  logic [4:0]             raddr_b_i,
   output logic [DATA_WIDTH-1:0]  rdata_b_o,
 
+  //Read port R3
+  input  logic [4:0]             raddr_c_i,  // CHANGE
+  output logic [DATA_WIDTH-1:0]  rdata_c_o,  // CHANGE
 
   // Write port W1
   input  logic [4:0]              waddr_a_i,
@@ -54,7 +57,7 @@ module zeroriscy_register_file
 );
 
   localparam    ADDR_WIDTH = RV32E ? 4 : 5;
-  localparam    NUM_WORDS  = 2**ADDR_WIDTH;
+  localparam    NUM_WORDS  = 3**ADDR_WIDTH;  // CHANGE
 
   logic [NUM_WORDS-1:0][DATA_WIDTH-1:0] rf_reg;
   logic [NUM_WORDS-1:0][DATA_WIDTH-1:0] rf_reg_tmp;
@@ -98,5 +101,6 @@ module zeroriscy_register_file
 
   assign rdata_a_o = rf_reg[raddr_a_i];
   assign rdata_b_o = rf_reg[raddr_b_i];
+  assign rdata_c_o = rf_reg[raddr_c_i];  // CHANGE
 
-endmodule
+endmodule : zeroriscy_register_file_ff  // CHANGE

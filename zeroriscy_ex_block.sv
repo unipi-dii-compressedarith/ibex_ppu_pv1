@@ -42,6 +42,7 @@ module zeroriscy_ex_block
   // PPU signals from ID stage
   input logic [31:0]  ppu_operand_a_i,
   input logic [31:0]  ppu_operand_b_i,
+  input logic [31:0]  ppu_operand_c_i,
   input logic [PPU_OP_WIDTH-1:0]   ppu_operator_i,
   input logic ppu_en_i,
   output logic [31:0] ppu_result_o,
@@ -202,6 +203,7 @@ generate
         .in_valid_i(ppu_en_i),
         .operand1_i(ppu_operand_a_i),
         .operand2_i(ppu_operand_b_i),
+        .operand3_i(ppu_operand_c_i),  // CHANGE
         .op_i(ppu_operator_i),
         .result_o(ppu_result),
         .out_valid_o(ppu_ready)
@@ -227,6 +229,7 @@ generate
             .in_valid_i(ppu_en_i),
             .operand1_i(ppu_operand_a_i[32/PPU_NUM*i+:32/PPU_NUM]),
             .operand2_i(ppu_operand_b_i[32/PPU_NUM*i+:32/PPU_NUM]),
+            .operand3_i(ppu_operand_c_i[32/PPU_NUM*i+:32/PPU_NUM]),  // CHANGE
             .op_i(ppu_operator_i),
             .result_o(ppu_result[32/PPU_NUM*i+:32/PPU_NUM]),
             .out_valid_o(ppu_ready_v[i])
@@ -261,4 +264,4 @@ endgenerate
   end
 
 
-endmodule
+endmodule : zeroriscy_ex_block

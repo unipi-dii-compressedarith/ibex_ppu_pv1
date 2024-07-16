@@ -140,6 +140,7 @@ module zeroriscy_core
   logic [PPU_OP_WIDTH-1:0]  ppu_operator_ex;
   logic [31:0] ppu_operand_a_ex;
   logic [31:0] ppu_operand_b_ex;
+  logic [31:0] ppu_operand_c_ex; // CHANGE
   logic [31:0] ppu_result_ex;
 
   // Multiplier Control
@@ -404,6 +405,7 @@ module zeroriscy_core
     .ppu_operator_ex_o            ( ppu_operator_ex      ),
     .ppu_operand_a_ex_o           ( ppu_operand_a_ex     ),
     .ppu_operand_b_ex_o           ( ppu_operand_b_ex     ),
+    .ppu_operand_c_ex_o           ( ppu_operand_c_ex     ),  // CHANGE
     .ppu_en_ex_o                  ( ppu_en_ex            ),
 
     .mult_en_ex_o                 ( mult_en_ex             ),
@@ -496,6 +498,7 @@ module zeroriscy_core
     .ppu_operator_i             ( ppu_operator_ex       ),
     .ppu_operand_a_i            ( ppu_operand_a_ex      ),
     .ppu_operand_b_i            ( ppu_operand_b_ex      ),
+    .ppu_operand_c_i            ( ppu_operand_c_ex      ),  // CHANGE
     .ppu_result_o               ( ppu_result_ex         ),
 
     // Multipler
@@ -730,6 +733,7 @@ module zeroriscy_core
     .csr_status     ( id_stage_i.controller_i.csr_status_i ),
     .rs1_value      ( id_stage_i.operand_a_fw_id           ),
     .rs2_value      ( id_stage_i.operand_b_fw_id           ),
+    .rs3_value      ( id_stage_i.operand_c_fw_id           ),  // CHANGE
 
     .lsu_value      ( data_wdata_ex                        ),
 

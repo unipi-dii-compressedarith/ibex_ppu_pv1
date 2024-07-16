@@ -34,6 +34,7 @@ import zeroriscy_defines::*;
 // Source/Destination register instruction index
 `define REG_S1 19:15
 `define REG_S2 24:20
+`define REG_S3 14:10
 `define REG_D  11:07
 
 
@@ -89,6 +90,7 @@ module zeroriscy_id_stage
     output logic [PPU_OP_WIDTH-1:0]  ppu_operator_ex_o,
     output logic [31:0] ppu_operand_a_ex_o,
     output logic [31:0] ppu_operand_b_ex_o,
+    output logic [31:0] ppu_operand_c_ex_o, // CHANGE
 
     // MUL, DIV
     output logic        mult_en_ex_o,
@@ -217,12 +219,14 @@ module zeroriscy_id_stage
   // Register file interface
   logic [4:0]  regfile_addr_ra_id;
   logic [4:0]  regfile_addr_rb_id;
+  logic [4:0]  regfile_addr_rc_id;  // CHANGE
 
   logic [4:0]  regfile_alu_waddr_id;
   logic        regfile_we_id;
 
   logic [31:0] regfile_data_ra_id;
   logic [31:0] regfile_data_rb_id;
+  logic [31:0] regfile_data_rc_id;  // CHANGE
 
   // ALU Control
   logic [ALU_OP_WIDTH-1:0] alu_operator;
@@ -236,6 +240,7 @@ module zeroriscy_id_stage
   logic [PPU_OP_WIDTH-1:0] ppu_operator;
   logic [2:0]  ppu_op_a_mux_sel;
   logic [2:0]  ppu_op_b_mux_sel;
+  logic [2:0]  ppu_op_c_mux_sel;  // CHANGE
   logic ppu_en;
 
   // Multiplier Control
@@ -263,6 +268,7 @@ module zeroriscy_id_stage
 
   logic [31:0] operand_a_fw_id;
   logic [31:0] operand_b_fw_id;
+  logic [31:0] operand_c_fw_id;  // CHANGE
 
   logic [31:0] operand_b;
 
@@ -271,6 +277,7 @@ module zeroriscy_id_stage
 
   logic [31:0] ppu_operand_a;
   logic [31:0] ppu_operand_b;
+  logic [31:0] ppu_operand_c;  // CHANGE
 
   assign instr = instr_rdata_i;
 
@@ -296,6 +303,7 @@ module zeroriscy_id_stage
   //---------------------------------------------------------------------------
   assign regfile_addr_ra_id = instr[`REG_S1];
   assign regfile_addr_rb_id = instr[`REG_S2];
+  assign regfile_addr_rc_id = instr[`REG_S3];   //CHANGE
 
   //---------------------------------------------------------------------------
   // destination registers
@@ -409,6 +417,26 @@ module zeroriscy_id_stage
   assign alu_operand_b   = operand_b;
   assign operand_b_fw_id = regfile_data_rb_id;
 
+  //////////////////////////////////////////////////////
+  //   ___                                 _     ___  //
+  //  / _ \ _ __   ___ _ __ __ _ _ __   __| |  /      //
+  // | | | | '_ \ / _ \ '__/ _` | '_ \ / _` | |       //
+  // | |_| | |_) |  __/ | | (_| | | | | (_| | |       //
+  //  \___/| .__/ \___|_|  \__,_|_| |_|\__,_|  \____  //
+  //       |_|                                        //
+  //////////////////////////////////////////////////////
+
+  // CHANGE
+  always_comb
+      begin : ppu_operand_c_mux
+          case (ppu_op_c_mux_sel)
+              FMADD_S:  ppu_operand_c = regfile_data_rc_id;
+              FMADD_C:  ppu_operand_c = regfile_data_rc_id;
+              default:  ppu_operand_c = '0;
+          endcase // case (ppu_op_c_mux_sel)
+      end
+  // CHANGE
+
   /////////////////////////////////////////////////////////
   //  ____  _____ ____ ___ ____ _____ _____ ____  ____   //
   // |  _ \| ____/ ___|_ _/ ___|_   _| ____|  _ \/ ___|  //
@@ -425,7 +453,7 @@ module zeroriscy_id_stage
   // Register File mux
   always_comb
   begin
-    if(dbg_reg_wreq_i) begin
+    if(dbg_reg_wreq_i) begin  // se dbg_reg_wreq_i attivo -> modalita debug
       regfile_wdata_mux   = dbg_reg_wdata_i;
       regfile_waddr_mux   = dbg_reg_waddr_i;
       regfile_we_mux      = 1'b1;
@@ -459,6 +487,9 @@ module zeroriscy_id_stage
     // Read port b
     .raddr_b_i    ( (dbg_reg_rreq_i == 1'b0) ? regfile_addr_rb_id : dbg_reg_raddr_i ),
     .rdata_b_o    ( regfile_data_rb_id ),
+    // Read port c
+    .raddr_c_i    ( regfile_addr_rc_id ),  // CHANGE
+    .rdata_c_o    ( regfile_data_rc_id ),  // CHANGE
     // write port
     .waddr_a_i    ( regfile_waddr_mux ),
     .wdata_a_i    ( regfile_wdata_mux ),
@@ -517,6 +548,7 @@ module zeroriscy_id_stage
     .ppu_operator_o                  ( ppu_operator              ),
     .ppu_op_a_mux_sel_o              ( ppu_op_a_mux_sel          ),
     .ppu_op_b_mux_sel_o              ( ppu_op_b_mux_sel          ),
+    .ppu_op_c_mux_sel_o              ( ppu_op_c_mux_sel          ),  // CHANGE
     .ppu_en_o                        ( ppu_en                    ),
 
     // Register file control signals
@@ -684,6 +716,7 @@ module zeroriscy_id_stage
   assign ppu_operator_ex_o           = ppu_operator;
   assign ppu_operand_a_ex_o          = ppu_operand_a;
   assign ppu_operand_b_ex_o          = ppu_operand_b;
+  assign ppu_operand_c_ex_o          = ppu_operand_c;  // CHANGE
 
   assign csr_access_ex_o             = csr_access;
   assign csr_op_ex_o                 = csr_op;

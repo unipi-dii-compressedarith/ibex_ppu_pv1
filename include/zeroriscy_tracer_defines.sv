@@ -49,12 +49,14 @@ parameter INSTR_OR       =  { 7'b0000000, 10'b?, 3'b110, 5'b?, OPCODE_OP };
 parameter INSTR_AND      =  { 7'b0000000, 10'b?, 3'b111, 5'b?, OPCODE_OP };
 
 //PPU OP
-parameter INSTR_PPU_ADD      =  { 7'b1101010, 10'b?, 3'b000, 5'b?, OPCODE_PPU_OP };
-parameter INSTR_PPU_SUB      =  { 7'b1101010, 10'b?, 3'b001, 5'b?, OPCODE_PPU_OP };
+parameter INSTR_PPU_ADD     =  { 7'b1101010, 10'b?, 3'b000, 5'b?, OPCODE_PPU_OP };
+parameter INSTR_PPU_SUB     =  { 7'b1101010, 10'b?, 3'b001, 5'b?, OPCODE_PPU_OP };
 parameter INSTR_PPU_MUL     =  { 7'b1101010, 10'b?, 3'b010, 5'b?, OPCODE_PPU_OP };
 parameter INSTR_PPU_DIV     =  { 7'b1101010, 10'b?, 3'b100, 5'b?, OPCODE_PPU_OP };
+parameter INSTR_PPU_FMADD_S =  { 7'b1101100, 10'b?, 3'b000, 5'b?, OPCODE_PPU_OP };  // CHANGE
+parameter INSTR_PPU_FMADD_C =  { 7'b1101101, 10'b?, 3'b000, 5'b?, OPCODE_PPU_OP };  // CHANGE
 parameter INSTR_PPU_F2P     =  { 7'b1101000, 10'b?, 3'b000, 5'b?, OPCODE_PPU_OP };
-parameter INSTR_PPU_P2F    =   { 7'b1101001, 10'b?, 3'b000, 5'b?, OPCODE_PPU_OP };
+parameter INSTR_PPU_P2F     =  { 7'b1101001, 10'b?, 3'b000, 5'b?, OPCODE_PPU_OP };
 
 // SYSTEM
 parameter INSTR_CSRRW    =  { 17'b?, 3'b001, 5'b?, OPCODE_SYSTEM };
@@ -79,4 +81,4 @@ parameter INSTR_PMULHSU  =  { 7'b0000001, 10'b?, 3'b010, 5'b?, OPCODE_OP };
 parameter INSTR_PMULHU   =  { 7'b0000001, 10'b?, 3'b011, 5'b?, OPCODE_OP };
 
 
-endpackage
+endpackage : zeroriscy_tracer_defines
